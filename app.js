@@ -5,12 +5,13 @@
 
 var express = require('express');
 var routes = require('./routes');
-var user = require('./routes/user');
+var courses = require('./routes/courses');
+var faculty = require('./routes/faculty');
+var field = require('./routes/field');
 var http = require('http');
 var path = require('path');
 
 //Added dependencies
-var Bookshelf  = require('bookshelf');
 
 var app = express();
 
@@ -28,7 +29,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 // Connect to Database
-Bookshelf.mysql = Bookshelf.initialize({
+var Bookshelf  = require('bookshelf');
+
+Bookshelf.MySql = Bookshelf.initialize({
   client: 'mysql',
   connection: {
     // your connection config
@@ -41,30 +44,52 @@ Bookshelf.mysql = Bookshelf.initialize({
 });
 
 // elsewhere, to use the client:
-var Bookshelf = require('bookshelf').mysql;
+// var Bookshelf = require('bookshelf').MySql;
 
-var Courses = Bookshelf.Model.extend({tableName: 'courses'});
-var Faculty = Bookshelf.Model.extend({tableName: 'faculties'});
-var Fields = Bookshelf.Model.extend({tableName: 'fields'});
 
+// var Faculty = Bookshelf.Model.extend({
+
+//   tableName: 'faculties'
+
+// });
+// var Fields = Bookshelf.Model.extend({tableName: 'fields'});
+// var Courses = Bookshelf.Model.extend({
+
+//   tableName: 'courses',
+//   field: function() {
+//     return this.belongsTo(Fields);
+//   },
+//   faculty: function() {
+//     return this.belongsTo(Faculty);
+//   }
+// });
 
 //Attempting to better understand how SQL Queries work
-new Courses().query('where', 'id', '=', '100')
-  .fetch()
-  .then(function(model) {
-    // outputs 'Slaughterhouse Five'
-    console.log(model);
+// new Courses().query('where', 'id', '=', '100')
+//   .fetch()
+//   .then(function(model) {
+//     // outputs 'Slaughterhouse Five'
 
-  });
+//     console.log(model.get('title'));
 
-
+//   });
+// Courses.collection().fetch().then(function(collection) {
+//   // ...
+//   collection.forEach(function(item) {
+//   })
+// })
 // development only
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
 app.get('/', routes.index);
-app.get('/users', user.list);
+app.get('/courses', courses.list);
+app.get('/courses/add', courses.add);
+app.get('/faculty', faculty.list);
+app.get('/faculty/add', faculty.add);
+app.get('/field', field.list);
+app.get('/field/add', field.add);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

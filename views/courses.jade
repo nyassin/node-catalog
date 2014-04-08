@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  h1= title
+  p This is a list of all courses
+
+  - collection.forEach(function(course) {
+    =course.get('title') 
+    br
+  - })
